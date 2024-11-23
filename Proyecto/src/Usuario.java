@@ -6,49 +6,22 @@ interface Observador{
 }
 
 interface Sujeto {
-    void agregarObservador(Observador observador);
-    void eliminarObservador(Observador observador);
-    void notificarObservador(Observador observador, String mensaje);
+    void notificarObservador();
 }
 
 class Persona implements Sujeto{
-    private String nombre;
-    private List<Observador> observadores = new ArrayList<>();
+    private String mensaje;
+    private int id;
 
-    public Persona(String nombre){
-        this.nombre = nombre;
-    }
 
-    @Override
-    public void agregarObservador(Observador observador){
-        observadores.add(observador);
+    public Persona(int id,String mensaje){
+        this.mensaje = mensaje;
+        this.id = id;
     }
     @Override
-    public void eliminarObservador(Observador observador){
-        observadores.remove(observador);
+    public void notificarObservador(){
+        InsertValuesInJSON manejadorJSON = new InsertValuesInJSON();
+        manejadorJSON.editarMensaje(this.id,this.mensaje);
+        manejadorJSON.imprimir(); 
     }
-    @Override
-    public void notificarObservador(Observador observadorClave, String mensaje){
-        //!ACTUALIZAR Y MOSTRAR EL CONTENIDO DEL JSON CADA QUE SE AGREGUE UN MENSAJE
-        InsertValuesInJSON in = new InsertValuesInJSON();
-        in.imprimir(); //ESTO MUESTRA EL CONTENIDO
-    }
-
-    public void crearMensajeTexto(String mensaje){
-        notificarObservador(null, mensaje);
-    }
-}
-
-class Persona3 implements Observador{
-    private String nombre;
-
-    public Persona3(String nombre){
-        this.nombre=nombre;
-    }
-
-    @Override
-    public void actualizar(String mensaje) {
-        System.out.println(nombre+" ha recibido el mensaje: "+mensaje);
-    }
-
 }

@@ -3,88 +3,118 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.awt.Desktop;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 class InsertValuesInJSON {
-    public void agregarUsuario(int id, String usuarioNombre, String mensaje){
-        String rutaArchivo = "output.json"; // Archivo JSON
+    private final String rutaArchivo = "output.json";
 
-        // Nuevo usuario que queremos agregar
-        JSONObject nuevoUsuario = new JSONObject();
-        nuevoUsuario.put("id", 2);
-        nuevoUsuario.put("username", "usuario2");
-        nuevoUsuario.put("message", "¡Hola de nuevo!");
-
+    // Agregar usuario al JSON
+    public void agregarUsuario(int id, String usuarioNombre, String mensaje) { 
         try {
-            // Leer el archivo existente
-            JSONParser parser = new JSONParser();
-            Object obj = parser.parse(new FileReader(rutaArchivo));
-
-            // Convertir el contenido a un JSONObject
-            JSONObject jsonObject = (JSONObject) obj;
-
-            // Obtener el arreglo "users"
-            JSONArray usuarios = (JSONArray) jsonObject.get("users");
-
-            // Agregar el nuevo usuario al arreglo
-            usuarios.add(nuevoUsuario);
-
-            // Sobrescribir el archivo con los datos actualizados
-            try (FileWriter fileWriter = new FileWriter(rutaArchivo)) {
-                fileWriter.write(jsonObject.toJSONString());
-                fileWriter.flush();
+            JSONParser recorrido = new JSONParser();
+            JSONArray buscaUsuario = obtenerUsuarios(recorrido);
+        
+            boolean usuarioEncontrado = false;
+            
+            for (Object obj : buscaUsuario) {
+                JSONObject usuario = (JSONObject) obj;
+                if (Integer.parseInt(usuario.get("id").toString()) == id) {
+                    usuarioEncontrado = true;
+                    break;
+                }
+            }
+            if (!usuarioEncontrado) {
+                JSONObject nuevoUsuario = new JSONObject();
+                nuevoUsuario.put("id", id);
+                nuevoUsuario.put("username", usuarioNombre);
+                nuevoUsuario.put("message", mensaje);
+    
+                JSONParser parser = new JSONParser();
+                JSONArray usuarios = obtenerUsuarios(parser);
+    
+                usuarios.add(nuevoUsuario);
+                guardarArchivo(usuarios);
                 System.out.println("Usuario agregado exitosamente.");
             }
-
-        } catch (IOException | ParseException e) {
-            System.err.println("Error al manejar el archivo JSON: " + e.getMessage());
-        }
-    
-    }
-
-    public static void imprimirMensajes(){
-
-    }
-
-    public void imprimir(){
-        String filePath = "output.json";
-
-        // Crear el parser
-        JSONParser parser = new JSONParser();
-
-        try {
-            // Leer el archivo y convertirlo a un JSONObject
-            Object obj = parser.parse(new FileReader(filePath));
-            JSONObject jsonObject2 = (JSONObject) obj;
-
-            // Obtener el arreglo de usuarios
-            JSONArray usersArray2 = (JSONArray) jsonObject2.get("users");
-
-            // Iterar sobre el arreglo
-            for (Object userObj : usersArray2) {
-                JSONObject user = (JSONObject) userObj;
-                System.out.println(user.get("username"));
-                MensajeVideo tmpv = new MensajeVideo((String)user.get("message"));
-                try {
-                    tmpv.mostrar();
-                } catch (IOException | URISyntaxException e) {
-                    MensajeTexto tmpt = new MensajeTexto((String)user.get("message"));
-                    tmpt.mostrar();
-                }
-                System.out.println();
+            else{
+                System.out.println("Ya existe un usuario con el mismo ID");
             }
-
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("Error al agregar usuario: " + e.getMessage());
         }
     }
 
+    // Editar mensaje en el JSON
+    public void editarMensaje(int id, String nuevoMensaje) {
+        try {
+            JSONParser parser = new JSONParser();
+            JSONArray usuarios = obtenerUsuarios(parser);
+    
+            boolean usuarioEncontrado = false;
+    
+            for (Object obj : usuarios) {
+                JSONObject usuario = (JSONObject) obj;
+                if (Integer.parseInt(usuario.get("id").toString()) == id) {
+                    usuario.put("message", nuevoMensaje);
+                    usuarioEncontrado = true;
+                    break;
+                }
+            }
+    
+            if (usuarioEncontrado) {
+                guardarArchivo(usuarios);
+                System.out.println("Mensaje editado correctamente.");
+            } else {
+                System.out.println("No se encontró un usuario con el ID: " + id);
+            }
+    
+        } catch (Exception e) {
+            System.err.println("Error al editar mensaje: " + e.getMessage());
+        }
+    }    
+
+    // Mostrar contenido del JSON
+    public void imprimir() {
+        MensajeTexto mt;
+        MensajeVideo mv;
+        try {
+            JSONParser parser = new JSONParser();
+            JSONArray usuarios = obtenerUsuarios(parser);
+
+            for (Object obj : usuarios) {
+                JSONObject usuario = (JSONObject) obj;
+                System.out.print("\nID: " + usuario.get("id") + "\nUsuario: " + usuario.get("username") + "\nMensaje: ");
+                try {
+                    mv = new MensajeVideo((String) usuario.get("message"));
+                    mv.mostrar();
+                } catch (Exception e) {
+                    mt = new MensajeTexto((String) usuario.get("message"));
+                    mt.mostrar();
+                }
+                System.out.println("--------------------------------");
+            }
+        } catch (Exception e) {
+            System.err.println("Error al imprimir contenido: " + e.getMessage());
+        }
+    }
+
+    // Obtener usuarios del archivo
+    private JSONArray obtenerUsuarios(JSONParser parser) throws IOException, ParseException {
+        FileReader fileReader = new FileReader(rutaArchivo);
+        JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
+        return (JSONArray) jsonObject.get("users");
+    }
+
+    // Guardar usuarios en el archivo
+    private void guardarArchivo(JSONArray usuarios) throws IOException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("users", usuarios);
+
+        try (FileWriter fileWriter = new FileWriter(rutaArchivo)) {
+            fileWriter.write(jsonObject.toJSONString());
+            fileWriter.flush();
+        }
+    }
 }

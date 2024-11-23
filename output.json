@@ -2,18 +2,23 @@
     "users": [
         {
             "id": 1,
-            "message": "https://www.google.com",
+            "message": "Hola a todos!",
             "username": "usuario1"
         },
         {
             "id": 2,
-            "message": "Todo bien, gracias.",
+            "message": "Como se encuentran?",
             "username": "usuario2"
         },
         {
             "id": 3,
-            "message": "¡Hola a todos!",
+            "message": "Muy bien y tú?",
             "username": "usuario3"
+        },
+        {
+            "id": 4,
+            "message": "Apenas voy llegando",
+            "username": "Eduardo"
         }
     ]
 }

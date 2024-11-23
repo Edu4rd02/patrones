@@ -1,38 +1,63 @@
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import java.awt.Desktop;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Scanner;
 
 public class Main {
-    public static List<Persona> usuarios = new ArrayList<>();
-    public static List<Persona3> sistema = new ArrayList<>();
     public static void main(String[] args) {
         System.out.print("\033[H\033[2J");
         System.out.flush();
-        usuarios.add(new Persona("Usuario1"));
-        usuarios.add(new Persona("Usuario2"));
+        InsertValuesInJSON manejadorJSON = new InsertValuesInJSON();
+        Persona p;
+        Scanner scanner = new Scanner(System.in);
+        int opcion;
 
-        sistema.add(new Persona3("Sistema1"));
-        sistema.add(new Persona3("Sistema2"));
+        do {
+            System.out.println("\n-------------- Menú --------------");
+            System.out.println("| 1. Insertar usuario y mensaje  |");
+            System.out.println("| 2. Editar mensaje de usuario   |");
+            System.out.println("| 3. Mostrar usuarios y mensajes |");
+            System.out.println("| 0. Salir                       |");
+            System.out.println("----------------------------------");
+            System.out.print("Seleccione una opción: ");
+            opcion = scanner.nextInt();
+            scanner.nextLine();
 
+            switch (opcion) {
+                case 1:
+                    System.out.print("\nIngrese ID del usuario: ");
+                    int id = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.print("Ingrese nombre del usuario: ");
+                    String nombre = scanner.nextLine();
+                    System.out.print("Ingrese mensaje: ");
+                    String mensaje = scanner.nextLine();
+                    manejadorJSON.agregarUsuario(id, nombre, mensaje);
+                    break;
 
-        usuarios.get(0).agregarObservador(sistema.get(0));
-        usuarios.get(1).agregarObservador(sistema.get(1));
+                case 2:
+                    System.out.print("\nIngrese ID del usuario a editar: ");
+                    int idEditar = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.print("Ingrese el nuevo mensaje: ");
+                    String nuevoMensaje = scanner.nextLine();
+                    
+                    p = new Persona(idEditar, nuevoMensaje);
 
-        usuarios.get(0).crearMensajeTexto("Hola");
+                    p.notificarObservador();
+                    // manejadorJSON.editarMensaje(idEditar, nuevoMensaje);
+                    break;
 
-        InsertValuesInJSON is = new InsertValuesInJSON();
-        is.imprimir();
-        // usuario2.crearMensajeTexto("Hola");
+                case 3:
+                    manejadorJSON.imprimir();
+                    break;
+
+                case 0:
+                    System.out.println("\nSaliendo del programa...");
+                    break;
+
+                default:
+                    System.out.println("\nOpción no válida.");
+            }
+        } while (opcion != 0);
+
+        scanner.close();
     }
 }
