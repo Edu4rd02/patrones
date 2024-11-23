@@ -1,0 +1,19 @@
+{
+    "users": [
+        {
+            "id": 1,
+            "message": "https://www.google.com",
+            "username": "usuario1"
+        },
+        {
+            "id": 2,
+            "message": "Todo bien, gracias.",
+            "username": "usuario2"
+        },
+        {
+            "id": 3,
+            "message": "¡Hola a todos!",
+            "username": "usuario3"
+        }
+    ]
+}
