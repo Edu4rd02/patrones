@@ -42,7 +42,6 @@ public class Main {
                     p = new Persona(idEditar, nuevoMensaje);
 
                     p.notificarObservador();
-                    // manejadorJSON.editarMensaje(idEditar, nuevoMensaje);
                     break;
 
                 case 3:
